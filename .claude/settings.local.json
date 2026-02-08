@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(find-skills)",
+      "Bash(npx skills find:*)",
+      "WebSearch",
+      "mcp__search__brave_web_search",
+      "Bash(claude plugin:*)",
+      "Bash(claude:*)"
+    ]
+  }
+}

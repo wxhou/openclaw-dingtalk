@@ -1,7 +1,7 @@
 {
-  "name": "moltbot-dingtalk-bridge",
+  "name": "openclaw-dingtalk-bridge",
   "version": "1.0.0",
-  "description": "钉钉机器人与 Moltbot 的桥接服务",
+  "description": "钉钉机器人与 OpenClaw AI 助手对接的桥接服务",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

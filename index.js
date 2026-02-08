@@ -9,7 +9,7 @@ app.use(express.json());
 
 const CONFIG = {
   dingtalkSecret: process.env.DINGTALK_SECRET || '',
-  moltbotPath: process.env.MOLTBOT_PATH || 'moltbot',
+  openclawPath: process.env.OPENCLAW_PATH || 'openclaw',
   dingtalkWebhookUrl: process.env.DINGTALK_WEBHOOK_URL || '',
   dingtalkKeyword: process.env.DINGTALK_KEYWORD || '',
   sessionTimeout: 5 * 60 * 1000,
@@ -79,10 +79,11 @@ function parseDingtalkMessage(data) {
   return null;
 }
 
-async function sendToMoltbot(message, chatId) {
+async function sendToOpenclaw(message, chatId) {
   return new Promise((resolve) => {
     try {
-      const child = spawn(CONFIG.moltbotPath, ['agent', '--message', message, '--timeout', '120'], {
+      // OpenClaw agent 命令不支持 --timeout 参数，超时由 child_process 控制
+      const child = spawn(CONFIG.openclawPath, ['agent', '--message', message], {
         timeout: 130000,
         killSignal: 'SIGTERM'
       });
@@ -90,20 +91,28 @@ async function sendToMoltbot(message, chatId) {
       let stdout = '';
       let stderr = '';
 
+      // 设置超时计时器
+      const timeoutId = setTimeout(() => {
+        child.kill('SIGTERM');
+        resolve('处理超时，请稍后重试');
+      }, 120000);
+
       child.stdout.on('data', (data) => stdout += data.toString());
       child.stderr.on('data', (data) => stderr += data.toString());
 
-      child.on('close', () => {
+      child.on('close', (code) => {
+        clearTimeout(timeoutId);
         resolve(stdout.trim() || stderr.trim() || '消息已发送，但未收到回复');
       });
 
       child.on('error', (error) => {
-        console.error('执行 Moltbot 失败:', error.message);
+        clearTimeout(timeoutId);
+        console.error('执行 OpenClaw 失败:', error.message);
         resolve(`处理失败: ${error.message}`);
       });
 
     } catch (error) {
-      console.error('调用 Moltbot 失败:', error.message);
+      console.error('调用 OpenClaw 失败:', error.message);
       resolve(`处理失败: ${error.message}`);
     }
   });
@@ -186,7 +195,7 @@ app.post('/webhook/dingtalk', async (req, res) => {
       CONFIG.sessions.set(sessionId, { lastActivity: Date.now(), processing: true });
 
       try {
-        const response = await sendToMoltbot(message.content, message.chatId);
+        const response = await sendToOpenclaw(message.content, message.chatId);
         await sendToDingtalk(CONFIG.dingtalkWebhookUrl, response);
       } catch (error) {
         console.error('处理消息失败:', error);
@@ -220,7 +229,7 @@ app.get('/status', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Moltbot-Dingtalk Bridge started on port ${PORT}`);
+  console.log(`OpenClaw-Dingtalk Bridge started on port ${PORT}`);
   console.log(`WebHook: http://localhost:${PORT}/webhook/dingtalk`);
   console.log(`Health: http://localhost:${PORT}/health`);
 });

@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  moltbot-dingtalk-bridge:
+  openclaw-dingtalk-bridge:
     image: node:20-alpine
-    container_name: moltbot-dingtalk-bridge
+    container_name: openclaw-dingtalk-bridge
     working_dir: /app
     command: node index.js
     environment:
@@ -13,28 +13,28 @@ services:
       # 钉钉签名密钥（安全模式）
       - DINGTALK_SIGN_KEY=${DINGTALK_SIGN_KEY}
       # 钉钉关键字验证
-      - DINGTALK_KEYWORD=Moltbot
-      # Moltbot CLI 路径
-      - MOLTBOT_PATH=moltbot
+      - DINGTALK_KEYWORD=OpenClaw
+      # OpenClaw CLI 路径
+      - OPENCLAW_PATH=openclaw
     volumes:
       - ./:/app
     ports:
       - "3000:3000"
     restart: unless-stopped
     depends_on:
-      - moltbot-gateway
+      - openclaw-gateway
 
-  # Moltbot Gateway（如果需要）
-  moltbot-gateway:
-    image: ${CLAWDBOT_IMAGE:-moltbot:local}
-    container_name: moltbot-gateway
+  # OpenClaw Gateway（如果需要）
+  openclaw-gateway:
+    image: ${CLAWDBOT_IMAGE:-openclaw:local}
+    container_name: openclaw-gateway
     environment:
       HOME: /home/node
       TERM: xterm-256color
       CLAWDBOT_GATEWAY_TOKEN: ${CLAWDBOT_GATEWAY_TOKEN}
     volumes:
-      - ${CLAWDBOT_CONFIG_DIR:-~/.clawdbot}:/home/node/.clawdbot
-      - ${CLAWDBOT_CONFIG_DIR:-~/.clawdbot}/.npmrc:/home/node/.npmrc:ro
+      - ${CLAWDBOT_CONFIG_DIR:-~/.openclaw}:/home/node/.openclaw
+      - ${CLAWDBOT_CONFIG_DIR:-~/.openclaw}/.npmrc:/home/node/.npmrc:ro
       - ${CLAWDBOT_WORKSPACE_DIR:-./workspace}:/home/node/clawd
     ports:
       - "18789:18789"

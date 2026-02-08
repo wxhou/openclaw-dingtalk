@@ -1,11 +1,11 @@
-# Moltbot-Dingtalk Bridge
+# OpenClaw-Dingtalk Bridge
 
-通过钉钉群机器人与 Moltbot AI 助手对接的桥接服务。
+通过钉钉群机器人与 OpenClaw AI 助手对接的桥接服务。
 
 ## 功能特点
 
 - 接收钉钉群机器人的 WebHook 消息
-- 调用 Moltbot CLI 与 AI 对话
+- 调用 OpenClaw CLI 与 AI 对话
 - 将 AI 回复发送回钉钉群
 - 支持签名验证和关键词验证
 - Docker 部署支持
@@ -15,8 +15,8 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/wxhou/clawdbot-dingtalk.git
-cd clawdbot-dingtalk
+git clone https://github.com/wxhou/openclaw-dingtalk.git
+cd openclaw-dingtalk
 ```
 
 ### 2. 配置环境变量
@@ -25,7 +25,7 @@ cd clawdbot-dingtalk
 cp .env.example .env
 ```
 
-编辑 .env 文件，配置钉钉 WebHook 和 Moltbot Token。
+编辑 .env 文件，配置钉钉 WebHook 和 OpenClaw Token。
 
 ### 3. 运行服务
 
